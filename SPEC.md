@@ -8,7 +8,7 @@ Polygonal water bodies.
 ### Fields
 - `water`: `ocean`, `lake`, `river`, `reservoir`, or value of OSM `water` tag
 ### Ordering
-By size
+None
 
 ## `water_names`
 ### Contents

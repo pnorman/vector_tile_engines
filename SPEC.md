@@ -12,7 +12,7 @@ None
 
 ## `water_names`
 ### Contents
-Points with water names
+Points with water names.  
 Sources as with `water` layer, except sources without name data can be ignored.
 ### Fields
 - `name`: name of water body
@@ -22,7 +22,7 @@ By size then name as text
 
 ## `transport`
 ### Contents
-Transportation linear features
+Transportation linear features.  
 All from OSM data, with features appearing at the following zooms
 * `motorway`: z6
 * `trunk`: z7

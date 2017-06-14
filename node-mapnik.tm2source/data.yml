@@ -1,0 +1,101 @@
+_prefs:
+  disabled: []
+  inspector: false
+  mapid: ''
+  rev: ''
+  saveCenter: false
+name: node-mapnik demo
+description: Demo for node-mapnik vector tiles
+attribution: 'Data © OpenStreetMap contributors'
+center:
+  - 0
+  - 0
+  - 4
+minzoom: 0
+maxzoom: 15 # For development, otherwise 15
+_parts:
+  osm2pgsql: &osm2pgsql
+    type: postgis
+    dbname: gis
+    srid: 3857
+    geometry_field: way
+    extent: "-20037508,-20037508,20037508,20037508"
+Layer:
+  - id: water
+    geometry: polygon
+    properties:
+      minzoom: 0
+      buffer-size: 4
+    Datasource:
+      <<: *osm2pgsql
+      table: |-
+        (SELECT
+            way,
+            'ocean' AS water
+          FROM ne_ocean
+          WHERE z(!scale_denominator!) < 5
+        UNION ALL
+        SELECT
+            way,
+            'lake' AS water
+          FROM ne_lake
+          WHERE z(!scale_denominator!) < 5
+        UNION ALL
+        SELECT
+            way,
+            'ocean' AS water
+          FROM simplified_ocean_polygons
+          WHERE z(!scale_denominator!) < 10 AND z(!scale_denominator!) >= 5
+        UNION ALL
+        SELECT
+            way,
+            'ocean' AS water
+          FROM ocean_polygons
+          WHERE z(!scale_denominator!) >= 10
+        UNION ALL
+        SELECT
+            way,
+            CASE
+              WHEN waterway = 'riverbank' THEN 'riverbank'
+              WHEN landuse = 'reservoir' then 'reservoir'
+              ELSE water
+            END
+          FROM planet_osm_polygon
+          WHERE waterway = 'riverbank'
+            OR landuse = 'reservoir'
+            OR "natural" = 'water'
+        ) AS water
+  - id: water_names
+    geometry: point
+    properties:
+      minzoom: 0
+      buffer-size: 4
+    Datasource:
+      <<: *osm2pgsql
+      table: |-
+        (SELECT
+            ST_PointOnSurface(way) AS way,
+            name,
+            water
+          FROM (SELECT
+              way,
+              name,
+              'lake' AS water
+            FROM ne_lake
+            WHERE z(!scale_denominator!) < 5
+          UNION ALL
+          SELECT
+              way,
+              name,
+              CASE
+                WHEN waterway = 'riverbank' THEN 'riverbank'
+                WHEN landuse = 'reservoir' then 'reservoir'
+                ELSE water
+              END
+            FROM planet_osm_polygon
+            WHERE waterway = 'riverbank'
+              OR landuse = 'reservoir'
+              OR "natural" = 'water'
+          ) AS water_name_polys
+          WHERE way && !bbox! AND ST_PointOnSurface(way) && !bbox!
+        ) AS water_names

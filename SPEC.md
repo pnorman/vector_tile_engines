@@ -39,7 +39,7 @@ If the feature is oneway, then the direction of it is the direction of travel.
 ### Fields
 - `name`: Name of road
 - `ref`: Reference of road
-- `class`: value of `highway` tag, excluding _link
+- `class`: value of `highway` tag, excluding `_link`
 - `link`: True if the feature is a `_link`, empty otherwise
 - `oneway`: True if oneway=true or reverse
 - `brunnel`: `tunnel` or `bridge` for tunnels or bridges, with bridge taking priority

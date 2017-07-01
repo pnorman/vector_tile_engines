@@ -27,7 +27,8 @@ All from OSM data, with features appearing at the following zooms
 * `motorway`: z6
 * `trunk`: z7
 * `primary`: z8
-* `tertiary`: z9
+* `secondary`: z9
+* `tertiary`: z10
 * `residential`, `unclassified`: z12
 * `service`, `track`, and non-motorized types: z14
 `_link` roads of any type not shown until z10
@@ -41,7 +42,7 @@ If the feature is oneway, then the direction of it is the direction of travel.
 - `ref`: Reference of road
 - `class`: value of `highway` tag, excluding `_link`
 - `link`: True if the feature is a `_link`, empty otherwise
-- `oneway`: True if oneway=true or reverse
+- `oneway`: True if oneway=true or reverse, starts at z10
 - `brunnel`: `tunnel` or `bridge` for tunnels or bridges, with bridge taking priority
 
 ### Ordering

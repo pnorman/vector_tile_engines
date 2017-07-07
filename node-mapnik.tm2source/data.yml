@@ -99,3 +99,48 @@ Layer:
           ) AS water_name_polys
           WHERE way && !bbox! AND ST_PointOnSurface(way) && !bbox!
         ) AS water_names
+  - id: transport
+    geometry: point
+    properties:
+      minzoom: 6
+      buffer-size: 4
+    Datasource:
+      <<: *osm2pgsql
+      table: |-
+        (SELECT
+            way,
+            name,
+            ref,
+            highway AS class,
+            NULL::boolean AS link,
+            NULL::boolean AS oneway,
+            CASE
+              WHEN bridge IS NOT NULL AND bridge <> 'no' THEN 'bridge'
+              ELSE CASE WHEN tunnel IS NOT NULL and tunnel <> 'no' THEN 'tunnel' END
+            END AS brunnel
+          FROM planet_osm_roads
+          WHERE way && !bbox!
+            AND z(!scale_denominator!) < 10
+            AND (highway = 'motorway'
+              OR highway = 'trunk' AND z(!scale_denominator!) >= 7
+              OR highway = 'primary' AND z(!scale_denominator!) >= 8
+              OR highway = 'secondary' AND z(!scale_denominator!) >= 9)
+        UNION ALL
+        SELECT
+            CASE WHEN oneway = '-1' THEN ST_Reverse(way) ELSE way END AS way,
+            name,
+            ref,
+            CASE WHEN substr(highway, length(highway)-3, 4) = 'link' THEN substr(highway, 0, length(highway)-4) ELSE highway END AS class,
+            substr(highway, length(highway)-3, 4) = 'link' AS link,
+            oneway <> 'no' AS oneway ,
+            CASE
+              WHEN bridge IS NOT NULL AND bridge <> 'no' THEN 'bridge'
+              ELSE CASE WHEN tunnel IS NOT NULL and tunnel <> 'no' THEN 'tunnel' END
+            END AS brunnel
+          FROM planet_osm_roads
+          WHERE way && !bbox!
+            AND z(!scale_denominator!) >= 10
+            AND (highway IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link') -- These are at z10+
+              OR highway IN ('residential', 'unclassified') AND z(!scale_denominator!) >= 12
+              OR highway IN ('service', 'track', 'path', 'footway', 'bridleway', 'cycleway', 'steps') AND z(!scale_denominator!) >= 14)
+        ) AS transport

@@ -1,0 +1,86 @@
+# t-rex configuration
+
+[service.mvt]
+viewer = true
+
+[datasource]
+type = "postgis"
+# will need adjusting based on your username and system
+url = "postgresql://pnorman@%2Fvar%2Frun%2Fpostgresql/gis"
+
+[grid]
+# Predefined grids: web_mercator, wgs84
+predefined = "web_mercator"
+
+[[tileset]]
+name = "vector_demo"
+
+[[tileset.layer]]
+name = "water"
+geometry_field = "way"
+geometry_type = "POLYGON"
+srid = 3857
+buffer-size = 1
+simplify = true
+[[tileset.layer.query]]
+minzoom = 0
+maxzoom = 5
+sql = """
+SELECT
+      way,
+      'ocean' AS water
+    FROM ne_ocean
+  UNION ALL
+  SELECT
+      way,
+      'lake' AS water
+    FROM ne_lake
+"""
+[[tileset.layer.query]]
+minzoom = 5
+maxzoom = 11
+sql = """
+SELECT
+    way,
+    'ocean' AS water
+  FROM simplified_ocean_polygons
+UNION ALL
+SELECT
+    way,
+    CASE
+      WHEN waterway = 'riverbank' THEN 'riverbank'
+      WHEN landuse = 'reservoir' then 'reservoir'
+      ELSE water
+    END
+  FROM planet_osm_polygon
+  WHERE waterway = 'riverbank'
+    OR landuse = 'reservoir'
+    OR "natural" = 'water'
+"""
+[[tileset.layer.query]]
+minzoom = 11
+sql = """
+SELECT
+    way,
+    'ocean' AS water
+  FROM ocean_polygons
+UNION ALL
+SELECT
+    way,
+    CASE
+      WHEN waterway = 'riverbank' THEN 'riverbank'
+      WHEN landuse = 'reservoir' then 'reservoir'
+      ELSE water
+    END
+  FROM planet_osm_polygon
+  WHERE waterway = 'riverbank'
+    OR landuse = 'reservoir'
+    OR "natural" = 'water'
+"""
+
+[webserver]
+# Bind address. Use 0.0.0.0 to listen on all adresses.
+bind = "0.0.0.0"
+port = 6767
+threads = 4
+

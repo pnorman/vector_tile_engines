@@ -84,6 +84,44 @@ SELECT
       OR "natural" = 'water')
 """
 
+[[tileset.layer]]
+name = "water_names"
+geometry_field = "way"
+geometry_type = "POINT"
+srid = 3857
+buffer-size = 0
+simplify = true
+[[tileset.layer.query]]
+minzoom = 0
+maxzoom = 5
+sql = """
+SELECT
+    ST_PointOnSurface(way) AS way,
+    name,
+    'lake'::text AS water
+  FROM ne_lake
+  WHERE way && !bbox!
+    AND name IS NOT NULL
+"""
+[[tileset.layer.query]]
+minzoom = 5
+sql = """
+SELECT
+    ST_PointOnSurface(way) AS way,
+    name,
+    CASE
+      WHEN waterway = 'riverbank' THEN 'riverbank'
+      WHEN landuse = 'reservoir' then 'reservoir'
+      ELSE water
+    END
+  FROM planet_osm_polygon
+  WHERE way && !bbox!
+    AND name IS NOT NULL
+    AND (waterway = 'riverbank'
+      OR landuse = 'reservoir'
+      OR "natural" = 'water')
+"""
+
 [webserver]
 # Bind address. Use 0.0.0.0 to listen on all adresses.
 bind = "0.0.0.0"

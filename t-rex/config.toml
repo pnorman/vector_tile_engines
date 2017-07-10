@@ -30,11 +30,13 @@ SELECT
       way,
       'ocean' AS water
     FROM ne_ocean
+    WHERE way && !bbox!
   UNION ALL
   SELECT
       way,
       'lake' AS water
     FROM ne_lake
+    WHERE way && !bbox!
 """
 [[tileset.layer.query]]
 minzoom = 5
@@ -44,6 +46,7 @@ SELECT
     way,
     'ocean' AS water
   FROM simplified_ocean_polygons
+  WHERE way && !bbox!
 UNION ALL
 SELECT
     way,
@@ -53,9 +56,10 @@ SELECT
       ELSE water
     END
   FROM planet_osm_polygon
-  WHERE waterway = 'riverbank'
-    OR landuse = 'reservoir'
-    OR "natural" = 'water'
+  WHERE way && !bbox!
+    AND (waterway = 'riverbank'
+      OR landuse = 'reservoir'
+      OR "natural" = 'water')
 """
 [[tileset.layer.query]]
 minzoom = 11
@@ -64,6 +68,7 @@ SELECT
     way,
     'ocean' AS water
   FROM ocean_polygons
+  WHERE way && !bbox!
 UNION ALL
 SELECT
     way,
@@ -73,9 +78,10 @@ SELECT
       ELSE water
     END
   FROM planet_osm_polygon
-  WHERE waterway = 'riverbank'
-    OR landuse = 'reservoir'
-    OR "natural" = 'water'
+  WHERE way && !bbox!
+    AND (waterway = 'riverbank'
+      OR landuse = 'reservoir'
+      OR "natural" = 'water')
 """
 
 [webserver]

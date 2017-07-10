@@ -61,15 +61,16 @@ Layer:
               ELSE water
             END
           FROM planet_osm_polygon
-          WHERE waterway = 'riverbank'
+          WHERE (waterway = 'riverbank'
             OR landuse = 'reservoir'
-            OR "natural" = 'water'
+            OR "natural" = 'water')
+            AND way_area > 0.25*!pixel_width!::real*!pixel_height!::real
         ) AS water
   - id: water_names
     geometry: point
     properties:
       minzoom: 0
-      buffer-size: 4
+      buffer-size: 128
     Datasource:
       <<: *osm2pgsql
       table: |-
@@ -80,7 +81,8 @@ Layer:
           FROM (SELECT
               way,
               name,
-              'lake' AS water
+              'lake' AS water,
+              NULL::real AS way_area
             FROM ne_lake
             WHERE z(!scale_denominator!) < 5
           UNION ALL
@@ -91,19 +93,22 @@ Layer:
                 WHEN waterway = 'riverbank' THEN 'riverbank'
                 WHEN landuse = 'reservoir' then 'reservoir'
                 ELSE water
-              END
+              END,
+              way_area
             FROM planet_osm_polygon
             WHERE waterway = 'riverbank'
               OR landuse = 'reservoir'
               OR "natural" = 'water'
           ) AS water_name_polys
           WHERE way && !bbox! AND ST_PointOnSurface(way) && !bbox!
+            AND name IS NOT NULL
+            AND way_area > 16*!pixel_width!::real*!pixel_height!::real
         ) AS water_names
   - id: transport
     geometry: point
     properties:
       minzoom: 6
-      buffer-size: 4
+      buffer-size: 128
     Datasource:
       <<: *osm2pgsql
       table: |-

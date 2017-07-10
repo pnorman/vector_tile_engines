@@ -57,6 +57,7 @@ SELECT
     END
   FROM planet_osm_polygon
   WHERE way && !bbox!
+    AND way_area > 0.25*(!pixel_width!::real)^2
     AND (waterway = 'riverbank'
       OR landuse = 'reservoir'
       OR "natural" = 'water')
@@ -79,6 +80,7 @@ SELECT
     END
   FROM planet_osm_polygon
   WHERE way && !bbox!
+    AND way_area > 0.25*(!pixel_width!::real)^2
     AND (waterway = 'riverbank'
       OR landuse = 'reservoir'
       OR "natural" = 'water')
@@ -116,6 +118,7 @@ SELECT
     END
   FROM planet_osm_polygon
   WHERE way && !bbox!
+    AND way_area > 16*(!pixel_width!::real)^2
     AND name IS NOT NULL
     AND (waterway = 'riverbank'
       OR landuse = 'reservoir'

@@ -5,6 +5,11 @@ Polygonal water bodies.
 - zoom 5 to 9, osm simplified_ocean_polygons
 - zoom 10+, osm ocean_polygons
 - zoom 5+  OSM waterway=riverbank or landuse=reservoir or natural=water
+
+Minimum size of 0.25 pixels for OSM-sourced data
+
+Buffer of 4 pixels
+
 ### Fields
 - `water`: `ocean`, `lake`, `river`, `reservoir`, or value of OSM `water` tag
 ### Ordering
@@ -14,6 +19,11 @@ None
 ### Contents
 Points with water names.  
 Sources as with `water` layer, except sources without name data can be ignored.
+
+Minimum size of 16 pixels for OSM-sourced data
+
+Buffer of 128 pixels
+
 ### Fields
 - `name`: name of water body
 - `water`: `ocean`, `lake`, `river`, `reservoir`, or value of OSM `water` tag
@@ -36,6 +46,8 @@ All from OSM data, with features appearing at the following zooms
 Rail features not included for now.
 
 If the feature is oneway, then the direction of it is the direction of travel.
+
+Buffer of 128 pixels
 
 ### Fields
 - `name`: Name of road

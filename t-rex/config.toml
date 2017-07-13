@@ -22,69 +22,69 @@ geometry_type = "POLYGON"
 srid = 3857
 buffer-size = 4
 simplify = true
-[[tileset.layer.query]]
-minzoom = 0
-maxzoom = 5
-sql = """
-SELECT
+  [[tileset.layer.query]]
+  minzoom = 0
+  maxzoom = 5
+  sql = """
+  SELECT
+        way,
+        'ocean' AS water
+      FROM ne_ocean
+      WHERE way && !bbox!
+    UNION ALL
+    SELECT
+        way,
+        'lake' AS water
+      FROM ne_lake
+      WHERE way && !bbox!
+  """
+  [[tileset.layer.query]]
+  minzoom = 5
+  maxzoom = 11
+  sql = """
+  SELECT
       way,
       'ocean' AS water
-    FROM ne_ocean
+    FROM simplified_ocean_polygons
     WHERE way && !bbox!
   UNION ALL
   SELECT
       way,
-      'lake' AS water
-    FROM ne_lake
+      CASE
+        WHEN waterway = 'riverbank' THEN 'riverbank'
+        WHEN landuse = 'reservoir' then 'reservoir'
+        ELSE water
+      END
+    FROM planet_osm_polygon
     WHERE way && !bbox!
-"""
-[[tileset.layer.query]]
-minzoom = 5
-maxzoom = 11
-sql = """
-SELECT
-    way,
-    'ocean' AS water
-  FROM simplified_ocean_polygons
-  WHERE way && !bbox!
-UNION ALL
-SELECT
-    way,
-    CASE
-      WHEN waterway = 'riverbank' THEN 'riverbank'
-      WHEN landuse = 'reservoir' then 'reservoir'
-      ELSE water
-    END
-  FROM planet_osm_polygon
-  WHERE way && !bbox!
-    AND way_area > 0.25*(!pixel_width!::real)^2
-    AND (waterway = 'riverbank'
-      OR landuse = 'reservoir'
-      OR "natural" = 'water')
-"""
-[[tileset.layer.query]]
-minzoom = 11
-sql = """
-SELECT
-    way,
-    'ocean' AS water
-  FROM ocean_polygons
-  WHERE way && !bbox!
-UNION ALL
-SELECT
-    way,
-    CASE
-      WHEN waterway = 'riverbank' THEN 'riverbank'
-      WHEN landuse = 'reservoir' then 'reservoir'
-      ELSE water
-    END
-  FROM planet_osm_polygon
-  WHERE way && !bbox!
-    AND way_area > 0.25*(!pixel_width!::real)^2
-    AND (waterway = 'riverbank'
-      OR landuse = 'reservoir'
-      OR "natural" = 'water')
-"""
+      AND way_area > 0.25*(!pixel_width!::real)^2
+      AND (waterway = 'riverbank'
+        OR landuse = 'reservoir'
+        OR "natural" = 'water')
+  """
+  [[tileset.layer.query]]
+  minzoom = 11
+  sql = """
+  SELECT
+      way,
+      'ocean' AS water
+    FROM ocean_polygons
+    WHERE way && !bbox!
+  UNION ALL
+  SELECT
+      way,
+      CASE
+        WHEN waterway = 'riverbank' THEN 'riverbank'
+        WHEN landuse = 'reservoir' then 'reservoir'
+        ELSE water
+      END
+    FROM planet_osm_polygon
+    WHERE way && !bbox!
+      AND way_area > 0.25*(!pixel_width!::real)^2
+      AND (waterway = 'riverbank'
+        OR landuse = 'reservoir'
+        OR "natural" = 'water')
+  """
 
 [[tileset.layer]]
 name = "water_names"
@@ -93,37 +93,37 @@ geometry_type = "POINT"
 srid = 3857
 buffer-size = 128
 simplify = true
-[[tileset.layer.query]]
-minzoom = 0
-maxzoom = 5
-sql = """
-SELECT
-    ST_PointOnSurface(way) AS way,
-    name,
-    'lake'::text AS water
-  FROM ne_lake
-  WHERE way && !bbox!
-    AND name IS NOT NULL
-"""
-[[tileset.layer.query]]
-minzoom = 5
-sql = """
-SELECT
-    ST_PointOnSurface(way) AS way,
-    name,
-    CASE
-      WHEN waterway = 'riverbank' THEN 'riverbank'
-      WHEN landuse = 'reservoir' then 'reservoir'
-      ELSE water
-    END
-  FROM planet_osm_polygon
-  WHERE way && !bbox!
-    AND way_area > 16*(!pixel_width!::real)^2
-    AND name IS NOT NULL
-    AND (waterway = 'riverbank'
-      OR landuse = 'reservoir'
-      OR "natural" = 'water')
-"""
+  [[tileset.layer.query]]
+  minzoom = 0
+  maxzoom = 5
+  sql = """
+  SELECT
+      ST_PointOnSurface(way) AS way,
+      name,
+      'lake'::text AS water
+    FROM ne_lake
+    WHERE way && !bbox!
+      AND name IS NOT NULL
+  """
+  [[tileset.layer.query]]
+  minzoom = 5
+  sql = """
+  SELECT
+      ST_PointOnSurface(way) AS way,
+      name,
+      CASE
+        WHEN waterway = 'riverbank' THEN 'riverbank'
+        WHEN landuse = 'reservoir' then 'reservoir'
+        ELSE water
+      END
+    FROM planet_osm_polygon
+    WHERE way && !bbox!
+      AND way_area > 16*(!pixel_width!::real)^2
+      AND name IS NOT NULL
+      AND (waterway = 'riverbank'
+        OR landuse = 'reservoir'
+        OR "natural" = 'water')
+  """
 
 [webserver]
 # Bind address. Use 0.0.0.0 to listen on all adresses.

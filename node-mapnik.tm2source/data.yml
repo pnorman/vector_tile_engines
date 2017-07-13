@@ -137,7 +137,7 @@ Layer:
             ref,
             CASE WHEN substr(highway, length(highway)-3, 4) = 'link' THEN substr(highway, 0, length(highway)-4) ELSE highway END AS class,
             substr(highway, length(highway)-3, 4) = 'link' AS link,
-            oneway <> 'no' AS oneway ,
+            oneway <> 'no' AS oneway,
             CASE
               WHEN bridge IS NOT NULL AND bridge <> 'no' THEN 'bridge'
               ELSE CASE WHEN tunnel IS NOT NULL and tunnel <> 'no' THEN 'tunnel' END

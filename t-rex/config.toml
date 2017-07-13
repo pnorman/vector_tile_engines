@@ -20,7 +20,7 @@ name = "water"
 geometry_field = "way"
 geometry_type = "POLYGON"
 srid = 3857
-buffer-size = 1
+buffer-size = 4
 simplify = true
 [[tileset.layer.query]]
 minzoom = 0
@@ -91,7 +91,7 @@ name = "water_names"
 geometry_field = "way"
 geometry_type = "POINT"
 srid = 3857
-buffer-size = 0
+buffer-size = 128
 simplify = true
 [[tileset.layer.query]]
 minzoom = 0

@@ -142,7 +142,7 @@ Layer:
               WHEN bridge IS NOT NULL AND bridge <> 'no' THEN 'bridge'
               ELSE CASE WHEN tunnel IS NOT NULL and tunnel <> 'no' THEN 'tunnel' END
             END AS brunnel
-          FROM planet_osm_roads
+          FROM planet_osm_line
           WHERE way && !bbox!
             AND z(!scale_denominator!) >= 10
             AND (highway IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link') -- These are at z10+

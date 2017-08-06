@@ -125,6 +125,56 @@ simplify = true
         OR "natural" = 'water')
   """
 
+[[tileset.layer]]
+name = "transport"
+geometry_field = "way"
+geometry_type = "LINESTRING"
+srid = 3857
+buffer-size = 128
+simplify = true
+  [[tileset.layer.query]]
+  minzoom = 6
+  maxzoom = 10
+  sql = """
+  SELECT
+      way,
+      name,
+      ref,
+      highway AS class,
+      CASE
+        WHEN bridge IS NOT NULL AND bridge <> 'no' THEN 'bridge'
+        ELSE CASE WHEN tunnel IS NOT NULL and tunnel <> 'no' THEN 'tunnel' END
+      END AS brunnel
+    FROM planet_osm_roads
+    WHERE way && !bbox!
+      AND (highway = 'motorway'
+        OR highway = 'trunk' AND !zoom! >= 7
+        OR highway = 'primary' AND !zoom! >= 8
+        OR highway = 'secondary' AND !zoom! >= 9)
+  """
+
+  [[tileset.layer.query]]
+  minzoom = 10
+  sql = """
+  SELECT
+      CASE WHEN oneway = '-1' THEN ST_Reverse(way) ELSE way END AS way,
+      name,
+      ref,
+      CASE WHEN substr(highway, length(highway)-3, 4) = 'link' THEN substr(highway, 0, length(highway)-4) ELSE highway END AS class,
+      substr(highway, length(highway)-3, 4) = 'link' AS link,
+      oneway <> 'no' AS oneway,
+      CASE
+        WHEN bridge IS NOT NULL AND bridge <> 'no' THEN 'bridge'
+        ELSE CASE WHEN tunnel IS NOT NULL and tunnel <> 'no' THEN 'tunnel' END
+      END AS brunnel
+    FROM planet_osm_line
+    WHERE way && !bbox!
+      AND (highway = 'motorway'
+        OR highway = 'trunk' AND !zoom! >= 7
+        OR highway = 'primary' AND !zoom! >= 8
+        OR highway = 'secondary' AND !zoom! >= 9)
+  """
+
 [webserver]
 # Bind address. Use 0.0.0.0 to listen on all adresses.
 bind = "0.0.0.0"

@@ -123,6 +123,7 @@ simplify = true
       AND (waterway = 'riverbank'
         OR landuse = 'reservoir'
         OR "natural" = 'water')
+    ORDER BY way_area DESC, name
   """
 
 [[tileset.layer]]

@@ -54,8 +54,11 @@ Buffer of 128 pixels
 - `ref`: Reference of road
 - `class`: value of `highway` tag, excluding `_link`
 - `link`: True if the feature is a `_link`, empty otherwise
+- `layer`: Layer of object relative to others within this layer
 - `oneway`: True if oneway=true or reverse, starts at z10
 - `brunnel`: `tunnel` or `bridge` for tunnels or bridges, with bridge taking priority
 
 ### Ordering
-By layer with highest layer first, ramp with ramps first, class with most significant first, then name
+For z10 and above, by layer with highest layer first, ramp with ramps first, class with most significant first, then name.
+
+For z9 and below, by class then name.

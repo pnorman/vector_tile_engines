@@ -152,6 +152,15 @@ simplify = true
         OR highway = 'trunk' AND !zoom! >= 7
         OR highway = 'primary' AND !zoom! >= 8
         OR highway = 'secondary' AND !zoom! >= 9)
+    ORDER BY
+      CASE highway
+        WHEN 'motorway' THEN 1
+        WHEN 'trunk' THEN 2
+        WHEN 'primary' THEN 3
+        WHEN 'secondary' THEN 4
+      END ASC,
+      name,
+      osm_id
   """
 
   [[tileset.layer.query]]

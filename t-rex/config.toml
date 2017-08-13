@@ -179,10 +179,22 @@ simplify = true
       END AS brunnel
     FROM planet_osm_line
     WHERE way && !bbox!
-      AND (highway = 'motorway'
-        OR highway = 'trunk' AND !zoom! >= 7
-        OR highway = 'primary' AND !zoom! >= 8
-        OR highway = 'secondary' AND !zoom! >= 9)
+      AND (highway IN ('motorway', 'motorway_link', 'trunk', 'trunk_link',
+                       'primary', 'primary_link', 'secondary', 'secondary_link',
+                       'tertiary', 'tertiary_link')
+        OR highway IN ('residential', 'unclassified') AND !zoom! >= 12
+        OR highway IN ('service', 'track', 'footway', 'cycleway', 'bridleway', 'path') AND !zoom! >= 12)
+    ORDER BY
+      COALESCE(layer, 0) DESC,
+      (substr(highway, length(highway)-3, 4) = 'link') DESC, -- put ramps first
+      CASE highway
+        WHEN 'motorway' THEN 1
+        WHEN 'trunk' THEN 2
+        WHEN 'primary' THEN 3
+        WHEN 'secondary' THEN 4
+      END ASC,
+      name,
+      osm_id
   """
 
 [webserver]

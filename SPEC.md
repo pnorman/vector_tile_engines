@@ -59,6 +59,6 @@ Buffer of 128 pixels
 - `brunnel`: `tunnel` or `bridge` for tunnels or bridges, with bridge taking priority
 
 ### Ordering
-For z10 and above, by layer with highest layer first, ramp with ramps first, class with most significant first, then name.
+For z10 and above, by layer with highest layer first, ramp with ramps first, class with most significant first, name, then OSM id.
 
-For z9 and below, by class then name.
+For z9 and below, by class, name, then OSM id.

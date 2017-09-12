@@ -183,7 +183,7 @@ simplify = true
                        'primary', 'primary_link', 'secondary', 'secondary_link',
                        'tertiary', 'tertiary_link')
         OR highway IN ('residential', 'unclassified') AND !zoom! >= 12
-        OR highway IN ('service', 'track', 'footway', 'cycleway', 'bridleway', 'path') AND !zoom! >= 12)
+        OR highway IN ('service', 'track', 'footway', 'cycleway', 'bridleway', 'path') AND !zoom! >= 14)
     ORDER BY
       COALESCE(layer, 0) DESC,
       (substr(highway, length(highway)-3, 4) = 'link') DESC, -- put ramps first

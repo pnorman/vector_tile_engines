@@ -1,0 +1,38 @@
+[webserver]
+port = ":9090"
+
+[[providers]]
+name = "vector_demo"	# provider name is referenced from map layers
+type = "postgis"		# the type of data provider. currently only supports postgis
+host = "/var/run/postgresql"		# postgis database host
+port = 5432				# postgis database port
+database = "osmcarto_bc" 	# postgis database name
+user = "pnorman"
+password = ""
+
+  [[providers.layers]]
+  name = "water-lz"
+  geometry_fieldname = "way"
+  id_fieldname = "osm_id"
+  sql = """
+  SELECT
+      0 AS osm_id,
+      ST_AsBinary(way) AS way,
+      'ocean' AS water
+    FROM ne_ocean
+    WHERE way && !BBOX!
+  UNION ALL
+  SELECT
+      0 AS osm_id,
+      ST_AsBinary(way) AS way,
+      'lake' AS water
+    FROM ne_lake
+    WHERE way && !BBOX!
+  """
+
+[[maps]]
+name = "vector_demo"
+[[maps.layers]]
+provider_layer = "vector_demo.water-lz"
+min_zoom = 0
+max_zoom = 5
